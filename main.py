@@ -37,7 +37,7 @@ def calculate_starting_points(img, side_size):
 
     return [ [a_x, a_y], [b_x, b_y], [c_x, c_y] ]  
 
-def calculate_sierpinski_coordinates(triangle):
+def calculate_sierpinski_coordinates(triangle, img):
     """
     Calculate next three points following the rule
     for generating sierpinski triangle
@@ -58,7 +58,12 @@ def calculate_sierpinski_coordinates(triangle):
     
     tr1_points = np.array([ [a_x, a_y], [ab_x, ab_y], [ac_x, ac_y] ], np.int32)  
     tr2_points = np.array([ [ab_x, ab_y], [b_x, b_y], [bc_x, bc_y] ], np.int32)  
-    tr3_points = np.array([ [a_x, a_y], [ab_x, ab_y], [ac_x, ac_y] ], np.int32)  
+    tr3_points = np.array([ [ac_x, ac_y], [bc_x, bc_y], [c_x, c_y] ], np.int32)  
+
+
+    cv2.polylines(img,[tr1_points],True,(0,128,255), 2)
+    cv2.polylines(img,[tr2_points],True,(0,0,255), 2)
+    cv2.polylines(img,[tr3_points],True,(255,0,255), 2)
 
 
 def main():
@@ -69,13 +74,13 @@ def main():
     
     side_size = 400
     triangle_pts = calculate_starting_points(img, side_size)
-    calculate_sierpinski_coordinates(triangle_pts)
+    calculate_sierpinski_coordinates(triangle_pts, img)
     
-    pts = np.array(triangle_pts, np.int32)
+    #pts = np.array(triangle_pts, np.int32)
 
     #pts = np.array([[10,5],[20,30],[70,20],[50,10]], np.int32)
     #pts = pts.reshape((-1,1,2))
-    cv2.polylines(img,[pts],True,(0,255,255), 3)
+    #cv2.polylines(img,[pts],True,(0,255,255), 3)
     
     cv2.imshow("image", img)
     cv2.waitKey()
