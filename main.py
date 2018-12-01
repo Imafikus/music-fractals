@@ -37,7 +37,29 @@ def calculate_starting_points(img, side_size):
 
     return [ [a_x, a_y], [b_x, b_y], [c_x, c_y] ]  
 
-def calculate_sierpinski_coordinates()
+def calculate_sierpinski_coordinates(triangle):
+    """
+    Calculate next three points following the rule
+    for generating sierpinski triangle
+    """
+
+    a_x, a_y = triangle[0]
+    b_x, b_y = triangle[1]
+    c_x, c_y = triangle[2]
+
+    print(a_x, a_y)
+    print(b_x, b_y)
+    print(c_x, c_y)
+
+    ab_x, ab_y = int((a_x + b_x) / 2), int((a_y + b_y) / 2) 
+    ac_x, ac_y = int((a_x + c_x) / 2), int((a_y + c_y) / 2) 
+    bc_x, bc_y = int((b_x + c_x) / 2), int((b_y + c_y) / 2)
+
+    
+    tr1_points = np.array([ [a_x, a_y], [ab_x, ab_y], [ac_x, ac_y] ], np.int32)  
+    tr2_points = np.array([ [ab_x, ab_y], [b_x, b_y], [bc_x, bc_y] ], np.int32)  
+    tr3_points = np.array([ [a_x, a_y], [ab_x, ab_y], [ac_x, ac_y] ], np.int32)  
+
 
 def main():
     img = cv2.imread("lena.jpg")
@@ -47,6 +69,7 @@ def main():
     
     side_size = 400
     triangle_pts = calculate_starting_points(img, side_size)
+    calculate_sierpinski_coordinates(triangle_pts)
     
     pts = np.array(triangle_pts, np.int32)
 
