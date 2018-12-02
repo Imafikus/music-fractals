@@ -6,7 +6,7 @@ from random import randint
 
 LINE_WIDTH = 1
 RECURSION_DEPTH = 6
-IMG_SRC = "lena.jpg"
+IMG_SRC = "black.jpg"
 
 def calculate_starting_points(img, side_size):
     """
@@ -25,21 +25,23 @@ def calculate_starting_points(img, side_size):
     #? in the future, this should move the C point coordinates
     #? according to some given parameter
     height, width, channels = img.shape
-    print(height, width, channels)
+    #print(height, width, channels)
 
-    t_x, t_y = int(height/2), int(width/2)
-    print(t_x, t_y)
+    random_factor = randint(-100, 100)
+
+    t_x, t_y = int((height+100)/2), int(width/2)
+    #print(t_x, t_y)
 
     b = side_size*sqrt(3) / 2
 
-    a_x = int(t_x - side_size / 2) + randint(-200, 200)
-    a_y = int(t_y + side_size * sqrt(3) / 6) + randint(-200, 200)
+    a_x = int(t_x - side_size / 2)# + randint(-200, 200)
+    a_y = int(t_y + side_size * sqrt(3) / 6)# + randint(-200, 200)
 
-    b_x = int(t_x + side_size / 2) + randint(-200, 200)
+    b_x = int(t_x + side_size / 2)# + randint(-200, 200)
     b_y = a_y 
 
-    c_x = int(t_x) + randint(-200, 200)
-    c_y = int(t_y - side_size*sqrt(3) / 3) + randint(-200, 200)
+    c_x = int(t_x) + random_factor
+    c_y = int(t_y - side_size*sqrt(3) / 3) + random_factor
 
     return [ [a_x, a_y], [b_x, b_y], [c_x, c_y] ]  
 
@@ -57,9 +59,9 @@ def draw_sierpinski_layer(triangle, img, level):
     b_x, b_y = triangle[1]
     c_x, c_y = triangle[2]
 
-    print(a_x, a_y)
-    print(b_x, b_y)
-    print(c_x, c_y)
+    # print(a_x, a_y)
+    # print(b_x, b_y)
+    # print(c_x, c_y)
 
     ab_x, ab_y = int((a_x + b_x) / 2), int((a_y + b_y) / 2) 
     ac_x, ac_y = int((a_x + c_x) / 2), int((a_y + c_y) / 2) 
@@ -76,9 +78,9 @@ def draw_sierpinski_layer(triangle, img, level):
     tr3_points = np.array(tr3, np.int32)  
 
 
-    cv2.polylines(img,[tr1_points],True,(0,128,255), LINE_WIDTH)
-    cv2.polylines(img,[tr2_points],True,(0,0,255), LINE_WIDTH)
-    cv2.polylines(img,[tr3_points],True,(255,0,255), LINE_WIDTH)
+    cv2.polylines(img,[tr1_points],True,(255, 0, 85), LINE_WIDTH)
+    cv2.polylines(img,[tr2_points],True,(255, 0, 85), LINE_WIDTH)
+    cv2.polylines(img,[tr3_points],True,(255, 0, 85), LINE_WIDTH)
 
     tr1 = [ [a_x, a_y], [ab_x, ab_y], [ac_x, ac_y] ]
     tr2 = [ [ab_x, ab_y], [b_x, b_y], [bc_x, bc_y] ]
@@ -97,9 +99,16 @@ def main():
     #line_thickness = 2
     #cv2.line(img, (20, 20), (60, 20), (0, 255, 0), line_thickness)
     
-    side_size = 400
-    triangle_pts = calculate_starting_points(img, side_size)
-    draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
+    side_size = 600
+    #triangle_pts = calculate_starting_points(img, side_size)
+
+    for i in range(0, 10):
+        #print(randint(-100, 100))
+        img = cv2.imread(IMG_SRC)
+        triangle_pts = calculate_starting_points(img, side_size)
+        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
+        path = "pictures/img" + str(i) + ".png"
+        cv2.imwrite(path, img)
     
     #pts = np.array(triangle_pts, np.int32)
 
@@ -107,9 +116,9 @@ def main():
     #pts = pts.reshape((-1,1,2))
     #cv2.polylines(img,[pts],True,(0,255,255), 3)
     
-    cv2.imshow("image", img)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    #cv2.imshow("image", img)
+    #cv2.waitKey()
+    #cv2.destroyAllWindows()
 
 
 
