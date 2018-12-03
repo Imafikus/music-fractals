@@ -48,7 +48,6 @@ def calculate_starting_points(img, side_size):
     #!calculate_scaling_factor()
 
     t_x, t_y = int((height+100)/2), int(width/2)
-    #print(t_x, t_y)
 
     b = side_size*sqrt(3) / 2
 
@@ -69,7 +68,6 @@ def draw_sierpinski_layer(triangle, img, level):
     for generating sierpinski triangle and draw them on an image
 
     """
-
     if level == 0:
         return
 
@@ -115,9 +113,20 @@ TRIANGLE_SIDE_SIZE = 600
 RECURSION_DEPTH = 6
 IMG_SRC = "black.jpg"
 
+def show_image(img):
+    """
+    Display image given by img
+    """
+    cv2.imshow("image", img)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+
 def main():
     img = cv2.imread(IMG_SRC)
-        
+
+    show_image(img)
+    return
+
     for i in range(0, 10):
         img = cv2.imread(IMG_SRC)
         triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE)
@@ -125,10 +134,6 @@ def main():
         path = "pictures/img" + str(i) + ".png"
         cv2.imwrite(path, img)
     
-    #cv2.imshow("image", img)
-    #cv2.waitKey()
-    #cv2.destroyAllWindows()
-
 if __name__ == "__main__":
-    #main()
-    calc_distortion_factor1(np.array[11, 12])
+    main()
+    #calc_distortion_factor1(np.array[11, 12])
