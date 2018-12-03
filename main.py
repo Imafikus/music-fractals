@@ -4,7 +4,8 @@ from math import sqrt
 
 from random import randint
 
-#from . import sound_processing as sp
+from sound_processing import get_sound, get_sound_duration
+from gif_processing import generate_gif
 
 
 def calc_distortion_factor1(signal):
@@ -20,12 +21,12 @@ def calc_distortion_factor1(signal):
     dist["b_x"] = 0
     dist["b_y"] = 0
     
-    dist["c_x"] = signal[0]
-    dist["c_y"] = signal[1]
+    dist["c_x"] = int(signal[0])
+    dist["c_y"] = int(signal[1])
 
-    print(dist)
+    return dist
 
-def calculate_starting_points(img, side_size):
+def calculate_starting_points(img, side_size, distortion):
     """
     Calculates first 3 points for the triangle
     based on the img width and height and side_size.
@@ -42,23 +43,19 @@ def calculate_starting_points(img, side_size):
     #? in the future, this should move the C point coordinates
     #? according to some given parameter
     height, width, channels = img.shape
-    #print(height, width, channels)
-
-    random_factor = randint(-100, 100)
-    #!calculate_scaling_factor()
 
     t_x, t_y = int((height+100)/2), int(width/2)
 
     b = side_size*sqrt(3) / 2
 
-    a_x = int(t_x - side_size / 2)# + randint(-200, 200)
-    a_y = int(t_y + side_size * sqrt(3) / 6)# + randint(-200, 200)
+    a_x = int(t_x - side_size / 2) + distortion["a_x"]
+    a_y = int(t_y + side_size * sqrt(3) / 6) + distortion["a_y"]
 
-    b_x = int(t_x + side_size / 2)# + randint(-200, 200)
-    b_y = a_y 
+    b_x = int(t_x + side_size / 2) + distortion["b_x"]
+    b_y = a_y + distortion["b_x"]
 
-    c_x = int(t_x) + random_factor
-    c_y = int(t_y - side_size*sqrt(3) / 3) + random_factor #+ 700
+    c_x = int(t_x) + distortion["c_x"]
+    c_y = int(t_y - side_size*sqrt(3) / 3) + distortion["c_y"]
 
     return [ [a_x, a_y], [b_x, b_y], [c_x, c_y] ]  
 
@@ -101,6 +98,14 @@ def draw_sierpinski_layer(triangle, img, level):
     draw_sierpinski_layer(tr2, img, level)
     draw_sierpinski_layer(tr3, img, level)
 
+def show_image(img):
+    """
+    Display image given by img
+    """
+    cv2.imshow("image", img)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+
 
 # --PARAMETERS--
 
@@ -113,27 +118,21 @@ TRIANGLE_SIDE_SIZE = 600
 RECURSION_DEPTH = 6
 IMG_SRC = "black.jpg"
 
-def show_image(img):
-    """
-    Display image given by img
-    """
-    cv2.imshow("image", img)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
-
 def main():
-    img = cv2.imread(IMG_SRC)
-
-    show_image(img)
+    #sound = get_sound()
+    sound_duration = get_sound_duration()
+    generate_gif(sound_duration)
     return
-
-    for i in range(0, 10):
-        img = cv2.imread(IMG_SRC)
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE)
-        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
-        path = "pictures/img" + str(i) + ".png"
-        cv2.imwrite(path, img)
-    
+    og_img = cv2.imread(IMG_SRC)
+    for i, sample in enumerate(sound):
+        if i % 100 == 0:
+            distortion = calc_distortion_factor1(sample)
+            img = np.copy(og_img)
+            triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, distortion)
+            draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
+            path = "pictures/img" + str(i) + ".png"
+            cv2.imwrite(path, img)
+        
 if __name__ == "__main__":
     main()
     #calc_distortion_factor1(np.array[11, 12])
