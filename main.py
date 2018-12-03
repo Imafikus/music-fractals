@@ -4,17 +4,26 @@ from math import sqrt
 
 from random import randint
 
-# --PARAMETERS--
+#from . import sound_processing as sp
 
-#? line width of a triangle, given in pixels
-LINE_WIDTH = 1
 
-#? length of the triangle side given in pixels, starting triangle is evensided
-TRIANGLE_SIDE_SIZE = 600
+def calc_distortion_factor1(signal):
+    """
+    Calculate pseudo-random distortion factor
+    based on the signal amplitude
+    """
+    dist = {}
 
-RECURSION_DEPTH = 6
-IMG_SRC = "black.jpg"
+    dist["a_x"] = 0
+    dist["a_y"] = 0
+    
+    dist["b_x"] = 0
+    dist["b_y"] = 0
+    
+    dist["c_x"] = signal[0]
+    dist["c_y"] = signal[1]
 
+    print(dist)
 
 def calculate_starting_points(img, side_size):
     """
@@ -94,15 +103,24 @@ def draw_sierpinski_layer(triangle, img, level):
     draw_sierpinski_layer(tr2, img, level)
     draw_sierpinski_layer(tr3, img, level)
 
+
+# --PARAMETERS--
+
+#? line width of a triangle, given in pixels
+LINE_WIDTH = 1
+
+#? length of the triangle side given in pixels, starting triangle is evensided
+TRIANGLE_SIDE_SIZE = 600
+
+RECURSION_DEPTH = 6
+IMG_SRC = "black.jpg"
+
 def main():
     img = cv2.imread(IMG_SRC)
         
-    side_size = 600
-
     for i in range(0, 10):
-        #print(randint(-100, 100))
         img = cv2.imread(IMG_SRC)
-        triangle_pts = calculate_starting_points(img, side_size)
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
         path = "pictures/img" + str(i) + ".png"
         cv2.imwrite(path, img)
@@ -112,4 +130,5 @@ def main():
     #cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()
+    #main()
+    calc_distortion_factor1(np.array[11, 12])
