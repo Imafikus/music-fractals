@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from math import sqrt
 
-from random import randint
+from random import randint, choice
 
 from sound_processing import get_sound, get_sound_duration
 from gif_processing import generate_gif
@@ -25,6 +25,43 @@ def calc_distortion_factor1(signal):
     dist["c_y"] = int(signal[1])
 
     return dist
+
+def calc_distortion_factor1(signal):
+    """
+    Calculate pseudo-random distortion factor
+    based on the signal amplitude
+    """
+    dist = {}
+
+    dist["a_x"] = int(signal[0])
+    dist["a_y"] = int(signal[1])
+    
+    dist["b_x"] = int(signal[0])
+    dist["b_y"] = int(signal[1])
+    
+    dist["c_x"] = int(signal[0])
+    dist["c_y"] = int(signal[1])
+
+    return dist
+
+def calc_distortion_factor1(signal):
+    """
+    Calculate pseudo-random distortion factor
+    based on the signal amplitude
+    """
+    dist = {}
+
+    dist["a_x"] = int(signal[0]) * choice([-1, 1])
+    dist["a_y"] = int(signal[1]) * choice([-1, 1])
+    
+    dist["b_x"] = int(signal[0]) * choice([-1, 1])
+    dist["b_y"] = int(signal[1]) * choice([-1, 1])
+    
+    dist["c_x"] = int(signal[0]) * choice([-1, 1])
+    dist["c_y"] = int(signal[1]) * choice([-1, 1])
+
+    return dist
+
 
 def calculate_starting_points(img, side_size, distortion):
     """
@@ -119,13 +156,13 @@ RECURSION_DEPTH = 6
 IMG_SRC = "black.jpg"
 
 def main():
-    #sound = get_sound()
-    sound_duration = get_sound_duration()
-    generate_gif(sound_duration)
-    return
+    sound = get_sound()
+    #sound_duration = get_sound_duration()
+    #generate_gif(sound_duration, limit=20000)
+    #return
     og_img = cv2.imread(IMG_SRC)
     for i, sample in enumerate(sound):
-        if i % 100 == 0:
+        if i % 100 == 0 and i <= 20000:
             distortion = calc_distortion_factor1(sample)
             img = np.copy(og_img)
             triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, distortion)
