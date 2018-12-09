@@ -7,7 +7,6 @@ from random import randint, choice
 from sound_processing import get_sound, get_sound_duration
 from gif_processing import generate_gif
 
-
 def calc_distortion_factor1(signal):
     """
     Calculate pseudo-random distortion factor
@@ -118,7 +117,7 @@ def draw_sierpinski_layer(triangle, img, level):
     tr3 = [ [ac_x, ac_y], [bc_x, bc_y], [c_x, c_y] ]
 
     tr1_points = np.array(tr1, np.int32)  
-    tr2_points = np.array(tr2, np.int32)  
+    tr2_points = np.array(tr2, np.int32)            
     tr3_points = np.array(tr3, np.int32)  
 
     cv2.polylines(img,[tr1_points],True,(255, 0, 85), LINE_WIDTH)
@@ -143,33 +142,81 @@ def show_image(img):
     cv2.waitKey()
     cv2.destroyAllWindows()
 
+def generate_image_set(sound, step, limit):
+    """
+    Generate image set based on the sampled sound
+    and distortion factor
+    """
+    og_img = cv2.imread(IMG_SRC)
+    print(len(sound))
+
+    for i, sample in enumerate(sound):
+        if i % step == 0:# and i <= limit:
+            #print("Usao u petlju")
+            distortion = calc_distortion_factor1(sample)
+            
+            img = np.copy(og_img)
+            
+            triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, distortion)
+            draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
+            
+
+            #? Used for resizing of the image
+            scaling_factor_x = 0.3
+            scaling_factor_y = 0.2
+
+
+            img_size = img.shape[:2]
+            #print("img_size", img_size)  
+
+            img_res = cv2.resize(img, (int(img_size[0]*scaling_factor_x),
+                                 int(img_size[1]*scaling_factor_y)),
+                                 interpolation=cv2.INTER_AREA)
+
+            path = "pictures/img" + str(i) + ".png"
+            path1 = "pictures/img" + str(i) + "_smaller.png"
+            
+            #res_path = "pictures/img" + str(i) + "res.png"
+            res_path1 = "pictures/img" + str(i) + "res_smaller.png"
+            
+
+            #cv2.imwrite(path, img)
+            #cv2.imwrite(path1, img, [int(cv2.IMWRITE_PNG_COMPRESSION), 100])
+
+            #cv2.imwrite(res_path, img_res)
+            cv2.imwrite(res_path1, img_res, [int(cv2.IMWRITE_PNG_COMPRESSION), 100])
+
+
 
 # --PARAMETERS--
 
-#? line width of a triangle, given in pixels
+#? Line width of a triangle, given in pixels
 LINE_WIDTH = 1
 
-#? length of the triangle side given in pixels, starting triangle is evensided
+#? Length of the triangle side given in pixels, starting triangle is evensided
 TRIANGLE_SIDE_SIZE = 600
 
+#? How deep should recursion go in draw_sierpinski_layer function
 RECURSION_DEPTH = 6
+
+#? Source of the triangle background
 IMG_SRC = "black.jpg"
+
+#? Path to folder where generated images are saved
+GENERATED_IMG_PATH = "pictures"
+
+#? How much pictures is allowed to be made
+LIMIT = 10000
+
+#? How dense should "image sampling" be
+STEP = 10
 
 def main():
     sound = get_sound()
-    #sound_duration = get_sound_duration()
+    sound_duration = get_sound_duration()
+    generate_image_set(sound, STEP, LIMIT)
     #generate_gif(sound_duration, limit=20000)
-    #return
-    og_img = cv2.imread(IMG_SRC)
-    for i, sample in enumerate(sound):
-        if i % 100 == 0 and i <= 20000:
-            distortion = calc_distortion_factor1(sample)
-            img = np.copy(og_img)
-            triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, distortion)
-            draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
-            path = "pictures/img" + str(i) + ".png"
-            cv2.imwrite(path, img)
         
 if __name__ == "__main__":
     main()
-    #calc_distortion_factor1(np.array[11, 12])
+
