@@ -5,24 +5,28 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 SCALING_FACTOR = 200
+SOUND_PATH = 'samples/bass_sample_slow.wav'
+
 
 def get_sound_duration():
     """
     Return duration of the sound
     """
     #!FIX ME not an absolute path to sound
-    samp_freq, snd = wav.read('samples/bass_sample.wav')
+    samp_freq, snd = wav.read(SOUND_PATH)
     
     sample_points = snd.shape[0]
 
     duration = sample_points / samp_freq
+    print("Sound duration:", duration)
     return duration
 
-def plot_soundwave(snd, samp_freq):
+def plot_soundwave():
     """
     Plot a soundwave given by snd
     Sample frequency is given by samp_freq
     """
+    samp_freq, snd = wav.read(SOUND_PATH)
 
     #?amplitude is mapped from -2^15 to 2^15 - 1, we want normalized amplitude
     snd = snd /(2.0**15)
@@ -47,7 +51,7 @@ def plot_soundwave(snd, samp_freq):
     plt.show()
 
 def get_sound():
-    samp_freq, snd = wav.read('samples/bass_sample.wav')
+    samp_freq, snd = wav.read(SOUND_PATH)
     
     #plot_soundwave(snd, samp_freq)
 
@@ -57,4 +61,4 @@ def get_sound():
     return scaled_snd
         
 if __name__ == "__main__":
-    get_sound()
+    plot_soundwave()
