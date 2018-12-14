@@ -5,7 +5,6 @@ from math import sqrt
 from random import randint, choice
 
 from sound_processing import get_sound, get_sound_duration
-from gif_processing import generate_gif
 
 from os.path import join
 
@@ -211,7 +210,6 @@ def main():
     sound = get_sound()
     sound_duration = get_sound_duration()
     generate_image_set(sound, STEP)
-    #generate_gif(0.0167)#*5)
         
 if __name__ == "__main__":
     main()
