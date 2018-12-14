@@ -7,7 +7,9 @@ from random import randint, choice
 from sound_processing import get_sound, get_sound_duration
 from gif_processing import generate_gif
 
-def calc_distortion_factor1(signal):
+from os.path import join
+
+def calc_distortion_factor2(signal):
     """
     Calculate pseudo-random distortion factor
     based on the signal amplitude
@@ -25,7 +27,7 @@ def calc_distortion_factor1(signal):
 
     return dist
 
-def calc_distortion_factor1(signal):
+def calc_distortion_factor3(signal):
     """
     Calculate pseudo-random distortion factor
     based on the signal amplitude
@@ -142,7 +144,7 @@ def show_image(img):
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-def generate_image_set(sound, step, limit):
+def generate_image_set(sound, step):
     """
     Generate image set based on the sampled sound
     and distortion factor
@@ -152,8 +154,8 @@ def generate_image_set(sound, step, limit):
     sound_length = len(sound)
     #return
     i = 0
+    img_index = 0
     while i < sound_length:
-        #print("Usao u petlju")
         distortion = calc_distortion_factor1(sound[i])
         
         img = np.copy(og_img)
@@ -163,37 +165,23 @@ def generate_image_set(sound, step, limit):
         
 
         #? Used for resizing of the image
-        scaling_factor_x = 0.3
-        scaling_factor_y = 0.2
+        scaling_factor_x = 1#0.3
+        scaling_factor_y = 1#0.2
 
 
-        img_size = img.shape[:2]
+        #img_size = img.shape[:2]
         #print("img_size", img_size)  
 
-        img_res = cv2.resize(img, (int(img_size[0]*scaling_factor_x),
-                             int(img_size[1]*scaling_factor_y)),
-                             interpolation=cv2.INTER_AREA)
+        # img_res = cv2.resize(img, (int(img_size[0]*scaling_factor_x),
+        #                      int(img_size[1]*scaling_factor_y)),
+        #                      interpolation=cv2.INTER_AREA)
 
-        #path = "pictures/img" + str(i) + ".png"
-        #path1 = "pictures/img" + str(i) + "_smaller.png"
-        #jpeg_path1 = "pictures/img" + str(i) + "_smaller.jpeg"
-        #webp_path1 = "pictures/img" + str(i) + "_smaller.webp"
+        res_path1 = join(*["pictures", "img" + str(img_index).zfill(7) + "res_smaller.png"])        
         
-        #res_path = "pictures/img" + str(i) + "res.png"
-        res_path1 = "pictures/img" + str(i) + "res_smaller.png"
-        
-
-        #cv2.imwrite(path, img)
-        #cv2.imwrite(path1, img, [int(cv2.IMWRITE_PNG_COMPRESSION), 100])
-
-        #cv2.imwrite(jpeg_path1, img_res, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
-        
-        #cv2.imwrite(webp_path1, img_res, [int(cv2.IMWRITE_WEBP_QUALITY), 100])
-        
-        cv2.imwrite(res_path1, img_res, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+        cv2.imwrite(res_path1, img, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
         i += step
-        #    return
+        img_index += 1
 
 # --PARAMETERS--
 
@@ -212,19 +200,18 @@ IMG_SRC = "black.jpg"
 #? Path to folder where generated images are saved
 GENERATED_IMG_PATH = "pictures"
 
-#? How much pictures is allowed to be made
-LIMIT = 10000
 
 #? How dense should "image sampling" be
 #? this gets 60 frames from one second of the sound sample
+#? you can add coefficient to change number of frames, default value is 735
 #!FIXME
-STEP = 735 * 5
+STEP = 735# * 5
 
 def main():
     sound = get_sound()
     sound_duration = get_sound_duration()
-    generate_image_set(sound, STEP, LIMIT)
-    generate_gif(0.0167*5)
+    generate_image_set(sound, STEP)
+    #generate_gif(0.0167)#*5)
         
 if __name__ == "__main__":
     main()

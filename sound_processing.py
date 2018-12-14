@@ -1,18 +1,17 @@
 import matplotlib.pyplot as plt
-from scipy.io import wavfile as wav
+from scipy.io import wavfile as wav 
 from scipy.fftpack import fft
 import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 SCALING_FACTOR = 200
-SOUND_PATH = 'samples/bass_sample_slow.wav'
+SOUND_PATH = 'samples/cela.wav'
 
 
 def get_sound_duration():
     """
     Return duration of the sound
     """
-    #!FIX ME not an absolute path to sound
     samp_freq, snd = wav.read(SOUND_PATH)
     
     sample_points = snd.shape[0]
