@@ -5,7 +5,7 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 SCALING_FACTOR = 200
-SOUND_PATH = 'samples/cela.wav'
+SOUND_PATH = 'samples/techie.wav'
 
 
 def get_sound_duration():

@@ -44,26 +44,39 @@ def calc_distortion_factor3(signal):
 
     return dist
 
-def calc_distortion_factor1(signal):
+def calc_distortion_factor1(signal, test=False):
     """
     Calculate pseudo-random distortion factor
     based on the signal amplitude
     """
     dist = {}
 
-    dist["a_x"] = int(signal[0]) * choice([-1, 1])
-    dist["a_y"] = int(signal[1]) * choice([-1, 1])
-    
-    dist["b_x"] = int(signal[0]) * choice([-1, 1])
-    dist["b_y"] = int(signal[1]) * choice([-1, 1])
-    
-    dist["c_x"] = int(signal[0]) * choice([-1, 1])
-    dist["c_y"] = int(signal[1]) * choice([-1, 1])
+    if not test:
+
+        dist["a_x"] = 0
+        dist["a_y"] = 0
+        
+        dist["b_x"] = 0
+        dist["b_y"] = 0
+        
+        dist["c_x"] = 0
+        dist["c_y"] = 0
+
+    else:
+        dist["a_x"] = int(signal[0]) * choice([-1, 1])
+        dist["a_y"] = int(signal[1]) * choice([-1, 1])
+        
+        dist["b_x"] = int(signal[0]) * choice([-1, 1])
+        dist["b_y"] = int(signal[1]) * choice([-1, 1])
+        
+        dist["c_x"] = int(signal[0]) * choice([-1, 1])
+        dist["c_y"] = int(signal[1]) * choice([-1, 1])
+
 
     return dist
 
 
-def calculate_starting_points(img, side_size, distortion):
+def calculate_starting_points(img, side_size, x_offset, y_offset, distortion):
     """
     Calculates first 3 points for the triangle
     based on the img width and height and side_size.
@@ -80,8 +93,10 @@ def calculate_starting_points(img, side_size, distortion):
     #? in the future, this should move the C point coordinates
     #? according to some given parameter
     height, width, channels = img.shape
+    # print("image height", height)
+    # print("image width", width)
 
-    t_x, t_y = int((height+100)/2), int(width/2)
+    t_x, t_y = int((height + x_offset)/2), int(width/2 + y_offset)
 
     b = side_size*sqrt(3) / 2
 
@@ -96,7 +111,7 @@ def calculate_starting_points(img, side_size, distortion):
 
     return [ [a_x, a_y], [b_x, b_y], [c_x, c_y] ]  
 
-def draw_sierpinski_layer(triangle, img, level):
+def draw_sierpinski_layer(triangle, img, level, color):
     """
     Calculate next three points following the rule
     for generating sierpinski triangle and draw them on an image
@@ -121,9 +136,9 @@ def draw_sierpinski_layer(triangle, img, level):
     tr2_points = np.array(tr2, np.int32)            
     tr3_points = np.array(tr3, np.int32)  
 
-    cv2.polylines(img,[tr1_points],True,(255, 0, 85), LINE_WIDTH)
-    cv2.polylines(img,[tr2_points],True,(255, 0, 85), LINE_WIDTH)
-    cv2.polylines(img,[tr3_points],True,(255, 0, 85), LINE_WIDTH)
+    cv2.polylines(img,[tr1_points],True, color, LINE_WIDTH)
+    cv2.polylines(img,[tr2_points],True, color, LINE_WIDTH)
+    cv2.polylines(img,[tr3_points],True, color, LINE_WIDTH)
 
     tr1 = [ [a_x, a_y], [ab_x, ab_y], [ac_x, ac_y] ]
     tr2 = [ [ab_x, ab_y], [b_x, b_y], [bc_x, bc_y] ]
@@ -131,9 +146,9 @@ def draw_sierpinski_layer(triangle, img, level):
 
     level = level-1
 
-    draw_sierpinski_layer(tr1, img, level)
-    draw_sierpinski_layer(tr2, img, level)
-    draw_sierpinski_layer(tr3, img, level)
+    draw_sierpinski_layer(tr1, img, level, color)
+    draw_sierpinski_layer(tr2, img, level, color)
+    draw_sierpinski_layer(tr3, img, level, color)
 
 def show_image(img):
     """
@@ -155,25 +170,32 @@ def generate_image_set(sound, step):
     i = 0
     img_index = 0
     while i < sound_length:
-        distortion = calc_distortion_factor1(sound[i])
+        #distortion = calc_distortion_factor1(sound[i])
+        
+        #!FIXME
+        distortion = calc_distortion_factor1(sound[i], test=True)
+        # distortion1 = calc_distortion_factor1(sound[i], test=True)
+        # distortion2 = calc_distortion_factor1(sound[i], test=True)
+        # distortion3 = calc_distortion_factor1(sound[i], test=True)
         
         img = np.copy(og_img)
         
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, distortion)
-        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH)
+        #first triangle
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, -540, -400, distortion)
+        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (204, 0, 0) )
+
+        #second triangle
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 200, -100, distortion)
+        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 204, 0) )
+                
+        #third triangle
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 940, 200, distortion)
+        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 0, 204) )
         
 
         #? Used for resizing of the image
         scaling_factor_x = 1#0.3
         scaling_factor_y = 1#0.2
-
-
-        #img_size = img.shape[:2]
-        #print("img_size", img_size)  
-
-        # img_res = cv2.resize(img, (int(img_size[0]*scaling_factor_x),
-        #                      int(img_size[1]*scaling_factor_y)),
-        #                      interpolation=cv2.INTER_AREA)
 
         res_path1 = join(*["pictures", "img" + str(img_index).zfill(7) + "res_smaller.png"])        
         
@@ -188,10 +210,10 @@ def generate_image_set(sound, step):
 LINE_WIDTH = 1
 
 #? Length of the triangle side given in pixels, starting triangle is evensided
-TRIANGLE_SIDE_SIZE = 600
+TRIANGLE_SIDE_SIZE = 300
 
 #? How deep should recursion go in draw_sierpinski_layer function
-RECURSION_DEPTH = 6
+RECURSION_DEPTH = 5
 
 #? Source of the triangle background
 IMG_SRC = "black.jpg"
@@ -199,6 +221,8 @@ IMG_SRC = "black.jpg"
 #? Path to folder where generated images are saved
 GENERATED_IMG_PATH = "pictures"
 
+#? X coord offset from the center
+OFFSET = 200
 
 #? How dense should "image sampling" be
 #? this gets 60 frames from one second of the sound sample
