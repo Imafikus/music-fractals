@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from math import sqrt
+from math import sqrt, log10, log
 
 from random import randint, choice
 
@@ -71,6 +71,40 @@ def calc_distortion_factor1(signal, test=False):
         
         dist["c_x"] = int(signal[0]) * choice([-1, 1])
         dist["c_y"] = int(signal[1]) * choice([-1, 1])
+
+
+    return dist
+
+def calc_distortion_factor2(signal, test=False):
+    """
+    Calculate pseudo-random distortion factor
+    based on the signal amplitude
+    """
+    dist = {}
+
+    if  test or (abs(signal[0]) <= 10 or abs(signal[1]) <= 10):
+
+        dist["a_x"] = 0
+        dist["a_y"] = 0
+        
+        dist["b_x"] = 0
+        dist["b_y"] = 0
+        
+        dist["c_x"] = 0
+        dist["c_y"] = 0
+
+    else:
+    
+        prepared_signal = abs(int(signal[0])), abs(int(signal[1]) ) 
+    
+        dist["a_x"] = log(abs(int(prepared_signal[0])+10 ) ) * choice([-10, 10]) #* 0.3 
+        dist["a_y"] = log(abs(int(prepared_signal[1])+10 ) ) * choice([-10, 10]) #* 0.3
+        
+        dist["b_x"] = log(abs(int(prepared_signal[0])+10 ) ) * choice([-10, 10]) #* 0.3
+        dist["b_y"] = log(abs(int(prepared_signal[1])+10 ) ) * choice([-10, 10]) #* 0.3
+        
+        dist["c_x"] = log(abs(int(prepared_signal[0])+10 ) ) * choice([-10, 10]) #* 0.3
+        dist["c_y"] = log(abs(int(prepared_signal[1])+10 ) ) * choice([-10, 10]) #* 0.3
 
 
     return dist
@@ -171,18 +205,18 @@ def generate_image_set(normal, low_pass, high_pass, step):
     img_index = 0
     while i < sound_length:
         
-        distortion1 = calc_distortion_factor1(normal[i])
+        distortion1 = calc_distortion_factor2(normal[i])
         distortion2 = calc_distortion_factor1(low_pass[i])
         distortion3 = calc_distortion_factor1(high_pass[i])
         
         img = np.copy(og_img)
         
         #first triangle
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, -540, -400, distortion2)
-        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (204, 0, 0) )
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, -540, -400, distortion1)
+        draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (255, 255, 255) )
 
         #second triangle
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 200, -100, distortion1)
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 200, -100, distortion2)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 204, 0) )
                 
         #third triangle
@@ -225,27 +259,29 @@ OFFSET = 200
 #? this gets 60 frames from one second of the sound sample
 #? you can add coefficient to change number of frames, default value is 735
 #!FIXME
-STEP = 735
+STEP = 735 * 2
 
 def main():
 
-    normal_path = "samples/techie.wav"
-    low_pass_path = "samples/pls_bass.wav"
-    high_pass_path = "samples/pls.wav"
+    low_pass_path = "samples/final/normal.wav"
+    normal_path = "samples/final/bass_boost.wav"
+    high_pass_path = "samples/final/bass_cut.wav"
 
     #plot_soundwave(normal_path)
     #return
 
-    normal = get_sound(normal_path)
-    #print("normal")
+    
     
     low_pass = get_sound(low_pass_path)
     print("low pass")
+
+    normal = get_sound(normal_path)
+    #print("normal")
     
     high_pass = get_sound(high_pass_path)
     #print("high_pass")
 
-    generate_image_set(normal, low_pass, high_pass, STEP)
+    generate_image_set(low_pass, normal, high_pass, STEP)
         
 if __name__ == "__main__":
     main()
