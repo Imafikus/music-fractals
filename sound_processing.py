@@ -8,11 +8,11 @@ SCALING_FACTOR = 200
 SOUND_PATH = 'samples/techie.wav'
 
 
-def get_sound_duration():
+def get_sound_duration(sound_path):
     """
     Return duration of the sound
     """
-    samp_freq, snd = wav.read(SOUND_PATH)
+    samp_freq, snd = wav.read(sound_path)
     
     sample_points = snd.shape[0]
 
@@ -20,12 +20,13 @@ def get_sound_duration():
     print("Sound duration:", duration)
     return duration
 
-def plot_soundwave():
+def plot_soundwave(sound_path):
     """
     Plot a soundwave given by snd
     Sample frequency is given by samp_freq
     """
-    samp_freq, snd = wav.read(SOUND_PATH)
+    samp_freq, snd = wav.read(sound_path)
+    #print(snd)
 
     #?amplitude is mapped from -2^15 to 2^15 - 1, we want normalized amplitude
     snd = snd /(2.0**15)
@@ -49,11 +50,9 @@ def plot_soundwave():
     
     plt.show()
 
-def get_sound():
-    samp_freq, snd = wav.read(SOUND_PATH)
+def get_sound(sound_path):
+    samp_freq, snd = wav.read(sound_path)
     
-    #plot_soundwave(snd, samp_freq)
-
     #?amplitude is mapped from -2^15 to 2^15 - 1, we want normalized amplitude
     #? for now we also want to scale it for further usage in main.py
     scaled_snd = snd /(2.0**15) * SCALING_FACTOR
