@@ -96,14 +96,14 @@ def calc_distortion_factor3(signal, test=False):
         dist["c_y"] = 0
 
     else:
-        dist["a_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.01
-        dist["a_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.01
+        dist["a_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.015
+        dist["a_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.015
         
-        dist["b_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.01
-        dist["b_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.01
+        dist["b_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.015
+        dist["b_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.015
         
-        dist["c_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.01
-        dist["c_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.01
+        dist["c_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.015
+        dist["c_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.015
 
 
     return dist
@@ -244,9 +244,9 @@ def generate_image_set(low_pass, normal, high_pass, step):
 
     #make images
     start = time.time()        
-    frames = [np.zeros((1024, 1280, 3), np.uint8) for i in range(1000)]
+    frames = [np.ones((1024, 1280, 3), np.uint8)*128 for i in range(1000)]
     end = time.time()
-    exec_time["write_img"] += (end-start)
+    exec_time["image_copy"] += (end-start)
 
 
     print("sound length: ", len(normal))
@@ -300,7 +300,7 @@ def generate_image_set(low_pass, normal, high_pass, step):
         img_index += 1
 
         end = time.time()
-        exec_time["image_copy"] += (end-start)
+        exec_time["write_img"] += (end-start)
     
     print("EXEC TIME: ", exec_time)
 # --PARAMETERS--
@@ -331,9 +331,9 @@ STEP = 735 * 2
 
 def main():
 
-    low_pass_path = "samples/7n/skull.wav"
-    normal_path = "samples/7n/skull_bassboost.wav"
-    high_pass_path = "samples/7n/skull_trebleboost.wav"
+    low_pass_path = "animals/animals_lowpass.wav"
+    normal_path = "animals/animals.wav"
+    high_pass_path = "animals/animals_highpass.wav"
 
     #plot_soundwave(normal_path)
     #return
