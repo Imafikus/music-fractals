@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import time
+
 from math import sqrt, log10, log
 
 from random import randint, choice
@@ -63,17 +65,49 @@ def calc_distortion_factor1(signal, test=False):
         dist["c_y"] = 0
 
     else:
-        dist["a_x"] = int(signal[0]) * choice([-1, 1])
-        dist["a_y"] = int(signal[1]) * choice([-1, 1])
+        dist["a_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.005
+        dist["a_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.005
         
-        dist["b_x"] = int(signal[0]) * choice([-1, 1])
-        dist["b_y"] = int(signal[1]) * choice([-1, 1])
+        dist["b_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.005
+        dist["b_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.005
         
-        dist["c_x"] = int(signal[0]) * choice([-1, 1])
-        dist["c_y"] = int(signal[1]) * choice([-1, 1])
+        dist["c_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.005
+        dist["c_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.005
 
 
     return dist
+
+def calc_distortion_factor3(signal, test=False):
+    """
+    Calculate pseudo-random distortion factor
+    based on the signal amplitude
+    """
+    dist = {}
+
+    if  test:
+
+        dist["a_x"] = 0
+        dist["a_y"] = 0
+        
+        dist["b_x"] = 0
+        dist["b_y"] = 0
+        
+        dist["c_x"] = 0
+        dist["c_y"] = 0
+
+    else:
+        dist["a_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.01
+        dist["a_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.01
+        
+        dist["b_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.01
+        dist["b_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.01
+        
+        dist["c_x"] = int(signal[0])**2 * choice([-1, 1]) * 0.01
+        dist["c_y"] = int(signal[1])**2 * choice([-1, 1]) * 0.01
+
+
+    return dist
+
 
 def calc_distortion_factor2(signal, test=False):
     """
@@ -82,7 +116,7 @@ def calc_distortion_factor2(signal, test=False):
     """
     dist = {}
 
-    if  test or (abs(signal[0]) <= 10 or abs(signal[1]) <= 10):
+    if  test:# or (abs(signal[0]) <= 10 or abs(signal[1]) <= 10):
 
         dist["a_x"] = 0
         dist["a_y"] = 0
@@ -97,14 +131,14 @@ def calc_distortion_factor2(signal, test=False):
     
         prepared_signal = abs(int(signal[0])), abs(int(signal[1]) ) 
     
-        dist["a_x"] = log(abs(int(prepared_signal[0])+10 ) ) * choice([-10, 10]) #* 0.3 
-        dist["a_y"] = log(abs(int(prepared_signal[1])+10 ) ) * choice([-10, 10]) #* 0.3
+        dist["a_x"] = (int(prepared_signal[0])+10 ) * choice([-1, 1]) * 0.4 
+        dist["a_y"] = (int(prepared_signal[1])+10 ) * choice([-1, 1]) * 0.4
         
-        dist["b_x"] = log(abs(int(prepared_signal[0])+10 ) ) * choice([-10, 10]) #* 0.3
-        dist["b_y"] = log(abs(int(prepared_signal[1])+10 ) ) * choice([-10, 10]) #* 0.3
+        dist["b_x"] = (int(prepared_signal[0])+10 ) * choice([-1, 1]) * 0.4
+        dist["b_y"] = (int(prepared_signal[1])+10 ) * choice([-1, 1]) * 0.4
         
-        dist["c_x"] = log(abs(int(prepared_signal[0])+10 ) ) * choice([-10, 10]) #* 0.3
-        dist["c_y"] = log(abs(int(prepared_signal[1])+10 ) ) * choice([-10, 10]) #* 0.3
+        dist["c_x"] = (int(prepared_signal[0])+10 ) * choice([-1, 1]) * 0.4
+        dist["c_y"] = (int(prepared_signal[1])+10 ) * choice([-1, 1]) * 0.4
 
 
     return dist
@@ -192,42 +226,72 @@ def show_image(img):
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-def generate_image_set(normal, low_pass, high_pass, step):
+def generate_image_set(low_pass, normal, high_pass, step):
     """
     Generate image set based on the sampled sound
     and distortion factor
     """
-    og_img = cv2.imread(IMG_SRC)
+    #og_img = cv2.imread(IMG_SRC)
+    #print("SHAPE" ,og_img.shape)
+    #return
+        
+    exec_time = {}
+    exec_time["distortion_factor"] = 0
+    exec_time["image_copy"] = 0
+    exec_time["drawing_triangles"] = 0
+    exec_time["write_img"] = 0
+
+
+    #make images
+    start = time.time()        
+    frames = [np.zeros((1024, 1280, 3), np.uint8) for i in range(1000)]
+    end = time.time()
+    exec_time["write_img"] += (end-start)
+
+
     print("sound length: ", len(normal))
     sound_length = len(normal)
     #return
     i = 0
     img_index = 0
+
+    
+
     while i < sound_length:
         
-        distortion1 = calc_distortion_factor2(normal[i])
-        distortion2 = calc_distortion_factor1(low_pass[i])
-        distortion3 = calc_distortion_factor1(high_pass[i])
+        #calc distrortion factor
+        start = time.time()
+        low_distortion = calc_distortion_factor1(low_pass[i])
+        normal_distortion = calc_distortion_factor2(normal[i])
+        high_distortion = calc_distortion_factor3(high_pass[i])
+        end = time.time()
+
+        exec_time["distortion_factor"] += (end-start)
+
+        #make backgroung image
+        #start = time.time()
+        img = frames[img_index]#np.zeros((1024, 1280, 3), np.uint8)
+        #end = time.time()
+        #exec_time["image_copy"] += (end-start)
         
-        img = np.copy(og_img)
-        
+        start = time.time()
         #first triangle
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, -540, -400, distortion1)
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, -540, -400, low_distortion)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (255, 255, 255) )
 
         #second triangle
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 200, -100, distortion2)
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 200, -100, normal_distortion)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 204, 0) )
                 
         #third triangle
-        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 940, 200, distortion3)
+        triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 940, 200, high_distortion)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 0, 204) )
+        end = time.time()
+        exec_time["drawing_triangles"] += (end-start)
         
 
-        #? Used for resizing of the image
-        scaling_factor_x = 1#0.3
-        scaling_factor_y = 1#0.2
 
+        start = time.time()
         res_path1 = join(*["pictures", "img" + str(img_index).zfill(7) + "res_smaller.png"])        
         
         cv2.imwrite(res_path1, img, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
@@ -235,6 +299,10 @@ def generate_image_set(normal, low_pass, high_pass, step):
         i += step
         img_index += 1
 
+        end = time.time()
+        exec_time["image_copy"] += (end-start)
+    
+    print("EXEC TIME: ", exec_time)
 # --PARAMETERS--
 
 #? Line width of a triangle, given in pixels
@@ -263,9 +331,9 @@ STEP = 735 * 2
 
 def main():
 
-    low_pass_path = "samples/final/normal.wav"
-    normal_path = "samples/final/bass_boost.wav"
-    high_pass_path = "samples/final/bass_cut.wav"
+    low_pass_path = "samples/7n/skull.wav"
+    normal_path = "samples/7n/skull_bassboost.wav"
+    high_pass_path = "samples/7n/skull_trebleboost.wav"
 
     #plot_soundwave(normal_path)
     #return
