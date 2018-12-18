@@ -1,1 +1,0 @@
-ffmpeg -framerate 60 -i img%04dres_smaller.png  -i  techie.wav  -acodec copy  techie.avi 
