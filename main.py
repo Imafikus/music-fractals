@@ -161,8 +161,6 @@ def calculate_starting_points(img, side_size, x_offset, y_offset, distortion):
     #? in the future, this should move the C point coordinates
     #? according to some given parameter
     height, width, channels = img.shape
-    # print("image height", height)
-    # print("image width", width)
 
     t_x, t_y = int((height + x_offset)/2), int(width/2 + y_offset)
 
@@ -231,9 +229,6 @@ def generate_image_set(low_pass, normal, high_pass, step):
     Generate image set based on the sampled sound
     and distortion factor
     """
-    #og_img = cv2.imread(IMG_SRC)
-    #print("SHAPE" ,og_img.shape)
-    #return
         
     exec_time = {}
     exec_time["distortion_factor"] = 0
@@ -241,21 +236,10 @@ def generate_image_set(low_pass, normal, high_pass, step):
     exec_time["drawing_triangles"] = 0
     exec_time["write_img"] = 0
 
-
-    #make images
-    start = time.time()        
-    #frames = np.zeros((1024, 1280, 3), np.uint8)
-    end = time.time()
-    exec_time["image_copy"] += (end-start)
-
-
     print("sound length: ", len(normal))
     sound_length = len(normal)
-    #return
     i = 0
     img_index = 0
-
-    
 
     while i < sound_length:
         
@@ -268,11 +252,11 @@ def generate_image_set(low_pass, normal, high_pass, step):
 
         exec_time["distortion_factor"] += (end-start)
 
-        #make backgroung image
-        #start = time.time()
+        #make background image
+        start = time.time()
         img = np.zeros((1024, 1280, 3), np.uint8)
-        #end = time.time()
-        #exec_time["image_copy"] += (end-start)
+        end = time.time()
+        exec_time["image_copy"] += (end-start)
         
         start = time.time()
         #first triangle
@@ -289,7 +273,6 @@ def generate_image_set(low_pass, normal, high_pass, step):
         end = time.time()
         exec_time["drawing_triangles"] += (end-start)
         
-
 
         start = time.time()
         res_path1 = join(*["pictures", "img" + str(img_index).zfill(7) + "res_smaller.png"])        
@@ -314,18 +297,13 @@ TRIANGLE_SIDE_SIZE = 300
 #? How deep should recursion go in draw_sierpinski_layer function
 RECURSION_DEPTH = 5
 
-#? Source of the triangle background
-IMG_SRC = "black.jpg"
-
 #? Path to folder where generated images are saved
 GENERATED_IMG_PATH = "pictures"
-
-#? X coord offset from the center
-OFFSET = 200
 
 #? How dense should "image sampling" be
 #? this gets 60 frames from one second of the sound sample
 #? you can add coefficient to change number of frames, default value is 735
+
 #!FIXME
 STEP = 735 * 2
 
@@ -335,19 +313,11 @@ def main():
     normal_path = "animals/animals.wav"
     high_pass_path = "animals/animals_highpass.wav"
 
-    #plot_soundwave(normal_path)
-    #return
-
-    
-    
     low_pass = get_sound(low_pass_path)
-    print("low pass")
 
     normal = get_sound(normal_path)
-    #print("normal")
     
     high_pass = get_sound(high_pass_path)
-    #print("high_pass")
 
     generate_image_set(low_pass, normal, high_pass, STEP)
         
