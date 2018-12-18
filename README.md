@@ -70,3 +70,8 @@ Files are converted by using the following command:
 
 NOTE: .wav and .mp3 file names should be specified by you.
 
+## Final Note
+
+This program is still very much in the development phase, so it's possible that some features are going to be added / replaced / removed.
+
+The latest stable version of the program will always be on master branch.
