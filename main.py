@@ -244,7 +244,7 @@ def generate_image_set(low_pass, normal, high_pass, step):
 
     #make images
     start = time.time()        
-    frames = [np.ones((1024, 1280, 3), np.uint8)*128 for i in range(1000)]
+    #frames = np.zeros((1024, 1280, 3), np.uint8)
     end = time.time()
     exec_time["image_copy"] += (end-start)
 
@@ -270,7 +270,7 @@ def generate_image_set(low_pass, normal, high_pass, step):
 
         #make backgroung image
         #start = time.time()
-        img = frames[img_index]#np.zeros((1024, 1280, 3), np.uint8)
+        img = np.zeros((1024, 1280, 3), np.uint8)
         #end = time.time()
         #exec_time["image_copy"] += (end-start)
         
