@@ -26,13 +26,11 @@ def plot_soundwave(sound_path):
     Sample frequency is given by samp_freq
     """
     samp_freq, snd = wav.read(sound_path)
-    #print(snd)
 
     #?amplitude is mapped from -2^15 to 2^15 - 1, we want normalized amplitude
     snd = snd /(2.0**15)
     
     #?snd has 2 channels and some number of sampling points
-    #?print(snd.shape)
     sample_points = snd.shape[0]
 
     print("Miliseconds: ", sample_points / samp_freq)
