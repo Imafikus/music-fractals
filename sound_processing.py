@@ -5,7 +5,6 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 SCALING_FACTOR = 200
-SOUND_PATH = 'samples/techie.wav'
 
 
 def get_sound_duration(sound_path):
@@ -49,12 +48,24 @@ def plot_soundwave(sound_path):
     plt.show()
 
 def get_sound(sound_path):
+    """
+    Return sampled and scaled sound. Sound is scaled to -1, 1 range
+    and then is multipled by scaling factor
+    """
     samp_freq, snd = wav.read(sound_path)
     
     #?amplitude is mapped from -2^15 to 2^15 - 1, we want normalized amplitude
     #? for now we also want to scale it for further usage in main.py
     scaled_snd = snd /(2.0**15) * SCALING_FACTOR
     return scaled_snd
-        
+
+def get_samp_freq(sound_path):
+    """
+    Returns sample frequency of the sound
+    """
+    samp_freq, snd = wav.read(sound_path)
+
+    return samp_freq
+
 if __name__ == "__main__":
     plot_soundwave()

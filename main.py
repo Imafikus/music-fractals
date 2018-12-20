@@ -6,7 +6,7 @@ from math import sqrt, log10, log
 
 from random import randint, choice
 
-from sound_processing import get_sound, get_sound_duration, plot_soundwave
+from sound_processing import get_sound, get_sound_duration, get_samp_freq, plot_soundwave
 
 from os.path import join
 
@@ -116,7 +116,7 @@ def calc_distortion_factor2(signal, test=False):
     """
     dist = {}
 
-    if  test:# or (abs(signal[0]) <= 10 or abs(signal[1]) <= 10):
+    if  test:
 
         dist["a_x"] = 0
         dist["a_y"] = 0
@@ -243,7 +243,7 @@ def generate_image_set(low_pass, normal, high_pass, step):
 
     while i < sound_length:
         
-        #calc distrortion factor
+        #?calc distrortion factor
         start = time.time()
         low_distortion = calc_distortion_factor1(low_pass[i])
         normal_distortion = calc_distortion_factor2(normal[i])
@@ -252,22 +252,23 @@ def generate_image_set(low_pass, normal, high_pass, step):
 
         exec_time["distortion_factor"] += (end-start)
 
-        #make background image
+        #?make background image
         start = time.time()
         img = np.zeros((1024, 1280, 3), np.uint8)
         end = time.time()
         exec_time["image_copy"] += (end-start)
         
         start = time.time()
-        #first triangle
+        
+        #?first triangle
         triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, -540, -400, low_distortion)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (255, 255, 255) )
 
-        #second triangle
+        #?second triangle
         triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 200, -100, normal_distortion)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 204, 0) )
                 
-        #third triangle
+        #?third triangle
         triangle_pts = calculate_starting_points(img, TRIANGLE_SIDE_SIZE, 940, 200, high_distortion)
         draw_sierpinski_layer(triangle_pts, img, RECURSION_DEPTH, (0, 0, 204) )
         end = time.time()
@@ -286,7 +287,8 @@ def generate_image_set(low_pass, normal, high_pass, step):
         exec_time["write_img"] += (end-start)
     
     print("EXEC TIME: ", exec_time)
-# --PARAMETERS--
+
+#? --PARAMETERS--
 
 #? Line width of a triangle, given in pixels
 LINE_WIDTH = 1
@@ -300,26 +302,27 @@ RECURSION_DEPTH = 5
 #? Path to folder where generated images are saved
 GENERATED_IMG_PATH = "pictures"
 
-#? How dense should "image sampling" be
-#? this gets 60 frames from one second of the sound sample
-#? you can add coefficient to change number of frames, default value is 735
-
-#!FIXME
-STEP = 735 * 2
+#? define fps rate for the video
+#? NOTE: You must put same framerate here and in the ffmpeg script
+FPS_RATE = 24
 
 def main():
 
     low_pass_path = "animals/animals_lowpass.wav"
-    normal_path = "animals/animals.wav"
-    high_pass_path = "animals/animals_highpass.wav"
-
     low_pass = get_sound(low_pass_path)
 
+    normal_path = "animals/animals.wav"
     normal = get_sound(normal_path)
-    
+
+    high_pass_path = "animals/animals_highpass.wav"    
     high_pass = get_sound(high_pass_path)
 
-    generate_image_set(low_pass, normal, high_pass, STEP)
+    samp_freq = get_samp_freq(normal_path)
+    
+    #? step defines how many fps our video is going to have
+    step = int(samp_freq / FPS_RATE)
+    
+    generate_image_set(low_pass, normal, high_pass, step)
         
 if __name__ == "__main__":
     main()

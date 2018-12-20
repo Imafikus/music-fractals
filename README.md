@@ -1,6 +1,6 @@
 # music-fractals
 
-## *Distorting fractals based on sound amplitude.*
+## *Distorting fractals based on the sound amplitude.*
 
 
 This program was made as a project for my Geometry class on faculty. Because the theme of the project was symmetry, and it had to be a video about 30 seconds long, I decided to make a program which will distort the given fractal based on the sound amplitude at the given moment.
