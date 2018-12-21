@@ -325,5 +325,6 @@ def main():
     generate_image_set(low_pass, normal, high_pass, step)
         
 if __name__ == "__main__":
+    #print("testeroni")
     main()
 

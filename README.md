@@ -59,8 +59,9 @@ After you've generated images, you should go to the *pictures* folder and run fo
 
 `ffmpeg -framerate your_framerate -i img%07dres_smaller.png  -i  your_sound.wav  -acodec copy  your_video.avi`
 
-NOTE: framerate, sound and video file should be specified by you, and if you have tinkered with the generated images naming, you should update that also.
+**NOTE 1:** framerate, sound and video file should be specified by you, and if you have tinkered with the generated images naming, you should update that also.
 
+**NOTE 2:** exec_time will tell you the execution part of individual integral parts of the program. Writing images to disc takes about 90% of the time, so you will probably run you program slower/faster depending on your hard drive speed. 
 
 ## Converting from .mp3 to .wav
 
