@@ -71,6 +71,13 @@ Files are converted by using the following command:
 
 NOTE: .wav and .mp3 file names should be specified by you.
 
+## Automatization 
+
+If you don't want to type commands by yourself, you can use *generate_video.sh* to do all operations needed to play the video.
+
+**NOTE:** Paths to .wav file and to folder where the video will be saved **are predefined** inside the shell script, so if you want some other folders **you must change that manually**.  
+Also, script generates and deletes *pictures* folder, so the compatibility with the current version of the program remains.
+
 ## Final Note
 
 This program is still very much in the development phase, so it's possible that some features are going to be added / replaced / removed.
